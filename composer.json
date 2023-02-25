@@ -1,0 +1,16 @@
+{
+    "name": "lmcmi/validators",
+    "description": "a simple validator to be use in any project",
+    "autoload": {
+        "psr-4": {
+            "Validators\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Lucas mialichi",
+            "email": "lmcmialichi@gmail.com"
+        }
+    ],
+    "require": {}
+}
