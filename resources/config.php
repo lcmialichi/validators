@@ -1,6 +1,11 @@
 <?php
 
 return [
-    "messages" => __DIR__ . "messages.php",
-    "handlers" => __DIR__ . "../src/Handlers.php",
+    "messages" => [
+        "path" => __DIR__ . "/messages.php"
+    ],
+    "handlers" =>  [
+        "namespace" => Validators\Handlers::class,
+
+    ]
 ];

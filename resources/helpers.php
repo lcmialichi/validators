@@ -55,3 +55,45 @@ if (!function_exists("endsWith")) {
         return substr($string, -strlen($search)) === $search;
     }
 }
+
+
+if (!function_exists('pascalCase')) {
+    /**
+     * Formata string para PascalCase
+     *
+     * @param string $string
+     * @return string
+     */
+    function pascalCase(string $string): string
+    {
+        if (preg_match("/[A-Z]*|[_-]/", $string)) {
+            if (strtoupper($string) === $string) {
+                $string = strtolower($string);
+            }
+            // $string = strtolower($string);
+        }
+
+        $string = str_replace(["_", "-"], " ", trim(strtolower(macroCase($string))));
+        $string = ucwords($string);
+        $string = str_replace(" ", "", $string);
+        return $string;
+    }
+}
+
+
+if (!function_exists('macroCase')) {
+    /**
+     * Formata string para MACRO_CASE
+     *
+     * @param string $string
+     * @return string
+     */
+    function macroCase(string $string): string
+    {
+        $string = str_replace(["-", " "], "_", $string);
+        if (strtoupper($string) === $string) {
+            $string = strtolower($string);
+        }
+        return strtoupper(strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string)));
+    }
+}
