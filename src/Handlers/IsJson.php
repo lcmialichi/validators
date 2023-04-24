@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Source\Validators\Handlers;
+namespace Validators\Handlers;
 
 class IsJson
 {
