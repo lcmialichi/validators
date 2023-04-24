@@ -82,7 +82,7 @@ $validator->setHandlersNamespace(SeuNamespace\ContendoApenasHandlers::class)
 
 # o nome da funçao é o nome da classe criada como handler
 # os parametros sao passados para o construtor
-
+# é possivel carregar mais de um namespace, handlers com mesmo nome serao substituido pelo ultimo carregado
 $error = $validator->in(1,2,3,4,5,6,7,8)->validate(6);
 
 $error->fails(); // false;
