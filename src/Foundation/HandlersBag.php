@@ -36,7 +36,7 @@ class HandlersBag
                     "execution" => fn (array $parameters) => new $class(...$parameters),
                     "name" => $name,
                     "message" => dot($name, $this->messages)
-                ];
+                ];  
             },
             $classes
         );

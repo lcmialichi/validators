@@ -88,6 +88,7 @@ class Errors
             throw new ValidationException($this);
         }
         return false;
+       
     }
 
     /**
