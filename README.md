@@ -102,7 +102,7 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 $validator = new Validator;
 $validator->setMessages([
-    "between" => "teste campo :field  possui valor invalido e deve estar entre :p1 e p:2"
+    "between" => "teste campo :field possui valor invalido e deve estar entre :p1 e p:2"
 ]);
 
 # a dependency injection do Validator so é necessaria quando existir uma 
@@ -129,6 +129,7 @@ $error = $validator->validate($fields, $rules);
 
 if($error->fails()){
     $error->throwOnFirst();
+    // mensage: "teste campo campo_a.item1 possui valor invalido e deve estar entre 1 e 2"
 }
 
 ```
