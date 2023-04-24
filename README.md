@@ -90,3 +90,45 @@ $error->fails(); // false;
 
 
 ```
+
+
+### Validacao com RULES
+
+```php
+use Validators\Validator;
+use Validators\ValidatorWithRules;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$validator = new Validator;
+$validator->setMessages([
+    "between" => "teste campo :field  possui valor invalido e deve estar entre :p1 e p:2"
+]);
+
+# a dependency injection do Validator so é necessaria quando existir uma 
+# pre configuraçao desejavel pelo usuario caso o contrario sera utilizado 
+# o Validator em estado default
+$validator = new ValidatorWithRules($validator);  
+
+# os campos sao passados em dot notation para se referir as chaves de um 
+# array que sera validado
+$rules = [
+    "campo_a" => "isArray|required",
+    "campo_a.item1" => "isString|between:1,2",
+    "campo_a.item2" => "numeric"
+];
+
+$fields = [
+    "campo_a" => [
+        "item1" => "aaaa",
+        "item2" => 3
+    ]
+];
+
+$error = $validator->validate($fields, $rules);
+
+if($error->fails()){
+    $error->throwOnFirst();
+}
+
+```
