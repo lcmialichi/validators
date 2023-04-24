@@ -4,7 +4,10 @@
     "autoload": {
         "psr-4": {
             "Validators\\": "src/"
-        }
+        },
+        "files": [
+            "resources/helpers.php"
+        ]
     },
     "authors": [
         {
