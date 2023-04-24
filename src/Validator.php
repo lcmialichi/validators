@@ -49,8 +49,5 @@ class Validator
         return $this;
     }
 
-    public function get()
-    {
-        return $this->configs->get();
-    }
+
 }
