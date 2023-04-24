@@ -1,6 +1,6 @@
 <?php
 
-namespace Validators\Exception;
+namespace Validators\Exceptions;
 
 use Validators\Errors;
 

@@ -2,7 +2,7 @@
 
 namespace Validators;
 
-use Validators\Exception\ValidationException;
+use Validators\Exceptions\ValidationException;
 
 class Errors
 {
