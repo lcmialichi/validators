@@ -9,6 +9,7 @@ class Validator
 {
     private ConfigBag $configs;
     private HandlersBag $handlers;
+    private array $activeRules = [];
 
     public function __construct(array $config = [])
     {
@@ -16,9 +17,10 @@ class Validator
         $this->handlers = new HandlersBag(
             $this->configs->getFromDefault('handlers.namespace') ?? null,
         );
-
+        
         if ($messages = $this->configs->getFromDefault('messages.path')) {
             $this->setMessagesPath($messages);
+           
         }
     }
 
@@ -49,5 +51,57 @@ class Validator
         return $this;
     }
 
+
+    public function __call($name, $values)
+    {
+        $name = pascalCase($name);
+        if ($this->has($name)) {
+            $validator = $this->get($name);
+            $validator["parameters"] = $values;
+            $this->setActiveRules($validator);
+            return $this;
+        }
+
+        throw new \Exception("Regra de validação não encontrada!");
+    }
+
+    public function validate(mixed ...$values): Errors
+    {
+        $errors = new Errors;
+        foreach ($values as $value) {
+            foreach ($this->activeRules as $key => $rules) {
+                $handler = $rules["execution"]($rules["parameters"])->validate($value);
+                if (!$handler) {
+                    $errors->add([
+                        "message" => $rules["message"],
+                        "name" => $rules["name"],
+                        "field" => $key
+                    ]);
+                }
+            };
+        }
+        $this->refresh();
+        return $errors;
+    }
+
+    private function get(string $rule)
+    {
+        return $this->handlers->get($rule);
+    }
+
+    public function has(string $rule)
+    {
+        return $this->handlers->has($rule);
+    }
+
+    private function setActiveRules(array $rules)
+    {
+        $this->activeRules[] = $rules;
+    }
+
+    private function refresh()
+    {
+        $this->activeRules = [];
+    }
 
 }

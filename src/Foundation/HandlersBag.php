@@ -44,6 +44,21 @@ class HandlersBag
 
     public function setMessages(array $messages)
     {
+        foreach($messages as $rule => $message){
+
+            if($this->has(pascalCase($rule))){
+                $this->handlers[pascalCase($rule)]["message"] = $message;
+            }
+        }
         $this->messages = array_merge($this->messages, $messages);
+    }
+
+    public function get(string $rule){
+        return $this->handlers[$rule];
+    }
+
+    public function has(string $rule)
+    {
+        return array_key_exists($rule, $this->handlers);
     }
 }
