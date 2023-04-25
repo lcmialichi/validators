@@ -15,5 +15,7 @@
             "email": "lmcmialichi@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=8.2"
+    }
 }
