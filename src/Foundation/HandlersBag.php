@@ -15,16 +15,16 @@ class HandlersBag
      */
     private array $messages = [];
 
-    public function __construct(?string $namespace = null)
+    public function __construct(?string $namespace = null, $appRoot = null)
     {
         if ($namespace) {
-            $this->load($namespace);
+            $this->load($namespace, $appRoot);
         }
     }
 
-    public function load(string $namespace)
+    public function load(string $namespace, ?string $appRoot = null)
     {
-        $loader = new NamespaceLoader($namespace, true);
+        $loader = new NamespaceLoader($namespace, $appRoot, true);
         $classes = $loader->load();
 
         array_map(
@@ -36,7 +36,7 @@ class HandlersBag
                     "execution" => fn (array $parameters) => new $class(...$parameters),
                     "name" => $name,
                     "message" => dot($name, $this->messages)
-                ];  
+                ];
             },
             $classes
         );
@@ -44,16 +44,17 @@ class HandlersBag
 
     public function setMessages(array $messages)
     {
-        foreach($messages as $rule => $message){
+        foreach ($messages as $rule => $message) {
 
-            if($this->has(pascalCase($rule))){
+            if ($this->has(pascalCase($rule))) {
                 $this->handlers[pascalCase($rule)]["message"] = $message;
             }
         }
         $this->messages = array_merge($this->messages, $messages);
     }
 
-    public function get(string $rule){
+    public function get(string $rule)
+    {
         return $this->handlers[$rule];
     }
 

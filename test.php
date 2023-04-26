@@ -6,10 +6,15 @@ use Validators\ValidatorWithRules;
 require_once __DIR__ . "/vendor/autoload.php";
 
 
-$validator = new Validator;
+$validator = new Validator([
+    "app-root" => __DIR__
+]);
 $validator->setMessages([
     "between" => "teste campo :field  possui valor invalido"
 ]);
+
+
+// $validator->setHandlersNamespace("Validators\Handlers");
 
 $validator = new ValidatorWithRules($validator);
 

@@ -8,8 +8,12 @@ class NamespaceLoader
 
     public function __construct(
         private string $namespace,
+        private ?string $appRoot = null,
         private bool $recursive = false
     ) {
+        if (!$this->appRoot) {
+            throw new \UnexpectedValueException("app-root not defined!");
+        }
     }
 
     public function namespaceToDir()
@@ -24,7 +28,7 @@ class NamespaceLoader
 
     public function appRoot()
     {
-        $appRoot =  __DIR__ . "/../";
+        $appRoot = $this->appRoot;
         if (!endsWith($appRoot, "/")) {
             $appRoot .= "/";
         }

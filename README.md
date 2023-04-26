@@ -77,7 +77,9 @@ use Validators\Validator;
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-$validator = new Validator;
+$validator = new Validator([
+    "app-root" => __DIR__ // informa a raiz do seu projeto (onde contem o composer.json)
+]);
 $validator->setHandlersNamespace(SeuNamespace\ContendoApenasHandlers::class)
 
 # o nome da funçao é o nome da classe criada como handler
@@ -105,7 +107,7 @@ $validator->setMessages([
     "between" => "teste campo :field possui valor invalido e deve estar entre :p1 e p:2"
 ]);
 
-# a dependency injection do Validator so é necessaria quando existir uma 
+# a classe Validator so é necessaria quando existir uma 
 # pre configuraçao desejavel pelo usuario caso o contrario sera utilizado 
 # o Validator em estado default
 $validator = new ValidatorWithRules($validator);  
