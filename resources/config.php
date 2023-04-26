@@ -7,5 +7,6 @@ return [
     "handlers" =>  [
         "namespace" => Validators\Handlers::class,
 
-    ]
+    ],
+    "app-root" => __DIR__ . "/../"
 ];

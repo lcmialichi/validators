@@ -16,11 +16,11 @@ class Validator
         $this->configs = new ConfigBag($config);
         $this->handlers = new HandlersBag(
             $this->configs->getFromDefault('handlers.namespace') ?? null,
+            $this->configs->getFromDefault('app-root') ?? null,
         );
-        
+
         if ($messages = $this->configs->getFromDefault('messages.path')) {
             $this->setMessagesPath($messages);
-           
         }
     }
 
@@ -47,7 +47,10 @@ class Validator
 
     public function setHandlersNamespace(string $namespace): self
     {
-        $this->handlers->load($namespace);
+        $this->handlers->load(
+            $namespace,
+            $this->configs->get("app-root")
+        );
         return $this;
     }
 
@@ -103,5 +106,4 @@ class Validator
     {
         $this->activeRules = [];
     }
-
 }
