@@ -2,108 +2,69 @@
 
 namespace Validators;
 
-use Validators\Foundation\ConfigBag;
-use Validators\Foundation\HandlersBag;
+use Validators\Rules;
+use Validators\Message\Messages;
+use Validators\Collection\ResultCollection;
+use Validators\Contracts\MessagesRegistration;
 
-class Validator
+class Validator extends Rules
 {
-    private ConfigBag $configs;
-    private HandlersBag $handlers;
-    private array $activeRules = [];
+    private MessagesRegistration $messages;
 
-    public function __construct(array $config = [])
+    private string $namespace;
+
+    public function __construct(array $rules = [])
     {
-        $this->configs = new ConfigBag($config);
-        $this->handlers = new HandlersBag(
-            $this->configs->getFromDefault('handlers.namespace') ?? null,
-            $this->configs->getFromDefault('app-root') ?? null,
+        $this->setRules($rules);
+        $this->setNamespaceHandler("\\Validators\\Handlers");
+        $this->registerMessages(new Messages);
+    }
+
+    public static function rules(array $rules, array $values): ResultCollection
+    {
+        return (new self($rules))->validate($values);
+    }
+
+    public function setNamespaceHandler(string $namespace)
+    {
+        $this->namespace = $namespace;
+    }
+
+    public function registerMessages(MessagesRegistration $messages)
+    {
+        $this->messages = $messages;
+    }
+
+    /** @inheritDoc */
+    protected function message(): MessagesRegistration
+    {
+        return $this->messages;
+    }
+    
+    /** @inheritDoc */
+    protected function namespace (): string
+    {
+        return $this->namespace;
+    }
+
+    public function validate(mixed ...$values) : ResultCollection
+    {
+        if ($this->hasRules()) {
+            $this->prepareRules();
+        }
+
+        $dispatch = Dispatch::createDispatch(
+            $this->handlers()
         );
 
-        if ($messages = $this->configs->getFromDefault('messages.path')) {
-            $this->setMessagesPath($messages);
-        }
+        return $dispatch->run($values);
     }
 
-    public function setMessagesPath(string $path): self
+    public function __call(string $name, array $arguments)
     {
-        if (file_exists($path)) {
-            $messages = require $path;
-            if (!is_array($messages)) {
-                throw new \RuntimeException("invalid messages file!");
-            }
-
-            $this->handlers->setMessages($messages);
-            return $this;
-        }
-
-        throw new \RuntimeException("invalid path to messages file!");
-    }
-
-    public function setMessages(array $messages): self
-    {
-        $this->handlers->setMessages($messages);
+        $handler = $this->factory()->getHandler($name, $arguments);
+        $this->addHandler($name, $handler, $arguments);
         return $this;
     }
 
-    public function setHandlersNamespace(string $namespace): self
-    {
-        $this->handlers->load(
-            $namespace,
-            $this->configs->get("app-root")
-        );
-        return $this;
-    }
-
-
-    public function __call($name, $values)
-    {
-        $name = pascalCase($name);
-        if ($this->has($name)) {
-            $validator = $this->get($name);
-            $validator["parameters"] = $values;
-            $this->setActiveRules($validator);
-            return $this;
-        }
-
-        throw new \Exception("Regra de validação não encontrada!");
-    }
-
-    public function validate(mixed ...$values): Errors
-    {
-        $errors = new Errors;
-        foreach ($values as $value) {
-            foreach ($this->activeRules as $key => $rules) {
-                $handler = $rules["execution"]($rules["parameters"])->validate($value);
-                if (!$handler) {
-                    $errors->add([
-                        "message" => $rules["message"],
-                        "name" => $rules["name"],
-                        "field" => $key
-                    ]);
-                }
-            };
-        }
-        $this->refresh();
-        return $errors;
-    }
-
-    private function get(string $rule)
-    {
-        return $this->handlers->get($rule);
-    }
-
-    public function has(string $rule)
-    {
-        return $this->handlers->has($rule);
-    }
-
-    private function setActiveRules(array $rules)
-    {
-        $this->activeRules[] = $rules;
-    }
-
-    private function refresh()
-    {
-        $this->activeRules = [];
-    }
 }

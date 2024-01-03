@@ -5,7 +5,7 @@ if (!function_exists('dot')) {
      * navega por um array atravez de dotNotation
      *
      * @param mixed $var
-     * @return void
+     * @return mixed
      */
     function dot(string $search, array|object $array): mixed
     {

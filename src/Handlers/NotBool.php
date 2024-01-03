@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class NotBool
+class NotBool implements \Validators\Contracts\ValidatorHandler
 {
     private ?bool $bool;
 
@@ -15,7 +15,7 @@ class NotBool
         };
     }
 
-    public function validate($data)
+    public function handle($data): bool
     {
         if ($this->bool !== null) {
             return $data !== $this->bool;

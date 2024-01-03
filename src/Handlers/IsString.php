@@ -2,10 +2,9 @@
 
 namespace Validators\Handlers;
 
-class IsString
+class IsString implements \Validators\Contracts\ValidatorHandler
 {
-
-    public function validate($content)
+    public function handle($content)
     {
         return is_string($content);
     }

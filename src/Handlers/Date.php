@@ -2,14 +2,13 @@
 
 namespace Validators\Handlers;
 
-class Date
+class Date implements \Validators\Contracts\ValidatorHandler
 {
-
-    public function __construct(private string $format){
-
+    public function __construct(private string $format)
+    {
     }
 
-    public function validate($value): bool
+    public function handle($value): bool
     {
         return \DateTime::createFromFormat($this->format, $value) !== false;
     }

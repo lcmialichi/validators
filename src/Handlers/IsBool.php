@@ -2,21 +2,20 @@
 
 namespace Validators\Handlers;
 
-class IsBool
+class IsBool implements \Validators\Contracts\ValidatorHandler
 {
-
     private ?bool $bool;
 
     public function __construct(?string $bool = null)
-    {   
-        $this->bool = match($bool){
+    {
+        $this->bool = match ($bool) {
             "true" => true,
             "false" => false,
             default => null
         };
     }
 
-    public function validate($data)
+    public function handle($data)
     {
         if ($this->bool !== null) {
             return $data === $this->bool;

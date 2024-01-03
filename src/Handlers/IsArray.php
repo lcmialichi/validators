@@ -2,9 +2,10 @@
 
 namespace Validators\Handlers;
 
-class IsArray{
-
-    public function validate($value) : bool{
-      return is_array($value);
-    }
+class IsArray implements \Validators\Contracts\ValidatorHandler
+{
+  public function handle($value): bool
+  {
+    return is_array($value);
+  }
 }

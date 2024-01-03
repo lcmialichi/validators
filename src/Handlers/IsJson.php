@@ -3,11 +3,10 @@
 
 namespace Validators\Handlers;
 
-class IsJson
+class IsJson implements \Validators\Contracts\ValidatorHandler
 {
-
-    public function validate($data)
+    public function handle($data)
     {
-       return json_decode($data) !== null;
+        return json_decode($data) !== null;
     }
 }

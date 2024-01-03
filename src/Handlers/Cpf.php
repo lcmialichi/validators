@@ -2,10 +2,9 @@
 
 namespace Validators\Handlers;
 
-class Cpf
+class Cpf implements \Validators\Contracts\ValidatorHandler
 {
-
-    public function validate($cpf): bool
+    public function handle($cpf): bool
     {
         if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) {
             return false;

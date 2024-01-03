@@ -2,9 +2,10 @@
 
 namespace Validators\Handlers;
 
-class Required{
-
-    public function validate($item){
+class Required implements \Validators\Contracts\ValidatorHandler
+{
+    public function handle($item): bool
+    {
         return isset($item);
     }
 }

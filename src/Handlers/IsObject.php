@@ -2,9 +2,10 @@
 
 namespace Validators\Handlers;
 
-class IsObject{
-
-    public function validate($value) : bool{
-      return is_object($value);
-    }
+class IsObject implements \Validators\Contracts\ValidatorHandler
+{
+  public function handle($value): bool
+  {
+    return is_object($value);
+  }
 }

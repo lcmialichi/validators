@@ -2,9 +2,9 @@
 
 namespace Validators\Handlers;
 
-class Numeric
+class Numeric implements \Validators\Contracts\ValidatorHandler
 {
-    public function validate($value): bool
+    public function handle($value): bool
     {
         return is_numeric($value);
     }

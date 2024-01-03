@@ -2,9 +2,9 @@
 
 namespace Validators\Handlers;
 
-class Md5
+class Md5 implements \Validators\Contracts\ValidatorHandler
 {
-    public function validate($value)
+    public function handle($value): bool
     {   
         return preg_match(
             "/^[a-f0-9]{32}$/i",
