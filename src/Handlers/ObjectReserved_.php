@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class IsObject implements \Validators\Contracts\ValidatorHandler
+class ObjectReserved_ implements \Validators\Contracts\ValidatorHandler
 {
   public function handle($value): bool
   {

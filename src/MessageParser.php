@@ -10,7 +10,7 @@ class messageParser
         ":enum",
     ];
 
-    public function __construct(private string $message)
+    public function __construct(private ?string $message)
     {
     }
 
@@ -32,7 +32,7 @@ class messageParser
         return $this;
     }
 
-    public function getMessage(): string
+    public function getMessage(): ?string
     {
         return $this->message;
     }
@@ -40,7 +40,7 @@ class messageParser
     private function getMatches(): array
     {
         $matches = [];
-        preg_match_all("/:[^\s\W]*\b/", $this->message(), $matches);
+        preg_match_all("/:[^\s\W]*\b/", $this->getMessage(), $matches);
         return $matches[0];
     }
 
@@ -58,14 +58,9 @@ class messageParser
         }
     }
 
-    public static function make(string $message)
+    public static function make(?string $message): self
     {
         return new self($message);
-    }
-
-    private function message(): string
-    {
-        return $this->message;
     }
 
     public function isGlobalWord(string $word): bool

@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class IsBool implements \Validators\Contracts\ValidatorHandler
+class BoolReserved_ implements \Validators\Contracts\ValidatorHandler
 {
     private ?bool $bool;
 

@@ -5,43 +5,25 @@ use Validators\ValidatorWithRules;
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-
 $validator = new Validator;
 
-$values = [ 'teste' => 3, "olar" => 1];
+$values = [
+    'teste' => [
+        "a" => "string",
+        "b" => "should_be_int",
+        "c" => []
+    ],
+    "olar" => 1
+];
 
-var_dump(Validator::rules([
-    'teste' => 'required|between:1,2',
-    'olar' => 'required|in:1,2'
-],$values));
+$rules = [
+    "teste.a" => "string|required|lenghtBetween:1,2",
+    "teste.b" => "int",
+    "teste.c" => "array",
+];
 
-// $validator = new Validator([
-//     "app-root" => __DIR__
-// ]);
-// $validator->setMessages([
-//     "between" => "teste campo :field  possui valor invalido"
-// ]);
+$result = Validator::rules($rules, $values);
+var_dump($result);
+var_dump($result->failedOnField("teste.c"));
 
 
-// // $validator->setHandlersNamespace("Validators\Handlers");
-
-// $validator = new ValidatorWithRules($validator);
-
-// $rules = [
-//     "campo_a" => "isArray|required",
-//     "campo_a.item1" => "isString|between:1,2",
-//     "campo_a.item2" => "numeric"
-// ];
-
-// $fields = [
-//     "campo_a" => [
-//         "item1" => "aaaa",
-//         "item2" => 3
-//     ]
-// ];
-
-// $error = $validator->validate($fields, $rules);
-
-// if($error->fails()){
-//     $error->throwOnFirst();
-// }

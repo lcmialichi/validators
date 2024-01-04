@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class IsArray implements \Validators\Contracts\ValidatorHandler
+class ArrayReserved_ implements \Validators\Contracts\ValidatorHandler
 {
   public function handle($value): bool
   {

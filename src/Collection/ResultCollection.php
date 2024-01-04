@@ -3,7 +3,6 @@
 namespace Validators\Collection;
 
 use Validators\Result;
-use Validators\Exceptions\ValidationException;
 
 class ResultCollection
 {
@@ -61,9 +60,19 @@ class ResultCollection
         return array_map($callback, $this->getErrors());
     }
 
+    public function getFromFails(callable $callback): array
+    {
+        return array_filter($this->getErrors(), $callback);
+    }
+
+    public function getFromSuccess(callable $callback): array
+    {
+        return array_filter($this->getSuccess(), $callback);
+    }
+
     public function failedOnRule(string $rule): bool
     {
-        return $this->mapFailures(fn($error) => $error->getRule() == $rule) > 0;
+        return !empty($this->getFromFails(fn($error) => $error->getRule() == $rule));
     }
 
     public function getFirstError(): ?Result
@@ -77,6 +86,17 @@ class ResultCollection
             throw new \Exception($this->getFirstError()->getMessage());
         }
         return false;
+    }
+
+    public function failedOnField(string $field): bool
+    {
+        return !empty($this->getFromFails(fn($error) => $error->getField() == $field));
+    }
+
+    public function add(ResultCollection $collection): void
+    {
+        $this->errors = array_merge($this->errors, $collection->getErrors());
+        $this->success = array_merge($this->success, $collection->getSuccess());
     }
 
 }

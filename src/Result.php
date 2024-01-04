@@ -8,7 +8,9 @@ class Result
         private string $rule,
         private bool $status,
         private ?string $message,
-        private mixed $value
+        private mixed $value,
+        private mixed $arguments,
+        private ?string $field = null
     ){}
 
     public function getRule(): string
@@ -29,5 +31,15 @@ class Result
     public function getValue(): mixed
     {
         return $this->value;
+    }
+
+    public function getArguments(): mixed
+    {
+        return $this->arguments;
+    }
+
+    public function getField(): ?string
+    {
+        return $this->field;
     }
 }

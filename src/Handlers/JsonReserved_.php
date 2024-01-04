@@ -3,7 +3,7 @@
 
 namespace Validators\Handlers;
 
-class IsJson implements \Validators\Contracts\ValidatorHandler
+class JsonReserved_ implements \Validators\Contracts\ValidatorHandler
 {
     public function handle($data)
     {

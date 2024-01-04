@@ -18,7 +18,11 @@ class Factory
 
     public function createMethod(string $name): string
     {
-        return pascalCase($name);
+        $word = pascalCase($name);
+        if (reserved($name)) {
+            $word .= "Reserved_";
+        }
+        return $word;
     }
 
     public function exists(string $method): bool

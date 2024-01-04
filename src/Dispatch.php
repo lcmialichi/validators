@@ -19,27 +19,36 @@ class Dispatch
         return new self($handlers);
     }
 
-    public function run(mixed $references = null)
+    public function run(array $references = []): ResultCollection
     {
-        $collection = [];
+        $result = new ResultCollection;
+        foreach ($references as $reference) {
+            $result->add($this->execute($reference));
+        }
+        return $result;
+    }
+
+    private function execute(mixed $reference): ResultCollection
+    {
         foreach ($this->handlers->getHandlers() as $rule) {
             if ($rule->field() !== null) {
-                $references = [dot($rule->field(), $references)];
+                $value = [dot($rule->field(), $reference ?? [])];
             }
 
-            $status = $rule->handler()->handle(...$references);
+            $status = $rule->handler()->handle(...$value);
             $result = new Result(
                 $rule->name(),
                 $status,
-                $status ? null :$this->parseMessage($rule),
-                $status ? null : $rule->arguments()
+                $status ? null : $this->parseMessage($rule),
+                $value,
+                $status ? null : $rule->arguments(),
+                $rule->field()
             );
-
             $statusName = $status ? "success" : "errors";
             $collection[$statusName][] = $result;
         }
 
-        return new ResultCollection($collection['success'] ?? [], $collection['errors'] ?? []);
+        return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);
     }
 
     private function parseMessage(Handler $handler): ?string
