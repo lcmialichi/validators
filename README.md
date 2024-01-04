@@ -5,7 +5,6 @@
 The Validator package is a versatile PHP validation library that allows you to perform robust data validation with ease. Whether you need to validate simple strings or complex nested structures, this package provides a flexible and intuitive solution.
 
 ## Index
----
 
 1. [Installation](#installation)
 2. [Quick Start](#quick-start)
@@ -18,7 +17,6 @@ The Validator package is a versatile PHP validation library that allows you to p
 5. [Conclusion](#conclusion)
 
 ## Installation
----
 
 Install the Validator package using Composer:
 
@@ -27,7 +25,7 @@ composer require lmcmi/validators
 ```
 
 ## Quick Start
----
+
 ### Standard Validation
 For straightforward validation, use the `Validator` class directly:
 
@@ -72,7 +70,7 @@ $result->failedOnRule('string'); // Returns true
 $result->getErrorsMessages(); // Returns all error messages if they exist
 ```
 ## Customization
----
+
 Tailor the Validator package to your needs by customizing handlers and messages.
 
 ### Custom Handlers
