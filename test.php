@@ -1,29 +1,38 @@
 <?php
 
 use Validators\Validator;
-use Validators\ValidatorWithRules;
 
 require_once __DIR__ . "/vendor/autoload.php";
 
 $validator = new Validator;
 
+// if you want to use your own namespace handler
+$validator->setNamespaceHandler("My\\Namespace\\Handler");
+$validator->registerMessages(new MyMessages());
+
 $values = [
-    'teste' => [
+    'field_1' => [
         "a" => "string",
         "b" => "should_be_int",
         "c" => []
     ],
-    "olar" => 1
+    "field_2" => '{"json": "valid"}'
 ];
 
 $rules = [
-    "teste.a" => "string|required|lenghtBetween:1,2",
-    "teste.b" => "int",
-    "teste.c" => "array",
+    "field_1" => "array|required",
+    "field_1.a" => "string|required|lenghtBetween:1,2",
+    "field_1.b" => "int|between:1,2",
+    "field_1.c" => "array",
+    "field_2" => "json",
 ];
 
 $result = Validator::rules($rules, $values);
-var_dump($result);
-var_dump($result->failedOnField("teste.c"));
+
+$result->failedOnField("teste.c"); // false
+$result->failed(); // true
+$result->throwOnFirstError(); // throws exception whith first error message
+$result->failedOnRule('string'); // true
+$result->getErrorsMessages(); // returns all error message if exists
 
 

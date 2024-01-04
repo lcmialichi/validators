@@ -1,137 +1,124 @@
+# Validator
 
+## Introduction
 
-## Exemplo de uso:
+The Validator package is a versatile PHP validation library that allows you to perform robust data validation with ease. Whether you need to validate simple strings or complex nested structures, this package provides a flexible and intuitive solution.
+
+## Index
 ---
-```php
-use Validators\Validator;
 
-require_once __DIR__ . "/vendor/autoload.php";
+1. [Installation](#installation)
+2. [Quick Start](#quick-start)
+    - [Standard Validation](#standard-validation)
+    - [Validation with Rules](#validation-with-rules)
+3. [Customization](#customization)
+    - [Custom Handlers](#custom-handlers)
+    - [Custom Messages](#custom-messages)
+4. [Contributing](#contributing)
+5. [Conclusion](#conclusion)
 
-$validator = new Validator;
-
-$error = $validator->between(1, 10)->isString()->validate("esse texto tem mais de 10 caracteres");
-
-if($error->fails()){
-    $error->throwOnFirst();
-}
-
-```
-
-## Configurações
+## Installation
 ---
-### personalização de mensagens :
- - o validator ja vem com mensagens padroes, mas atraves deste metodo é possivel alterar, ou até mesmo criar uma nova para o handler customizado
 
-```php
-$validator->setMessages([
-    "between" => "o valor inserido é invalido!"
-]);
+Install the Validator package using Composer:
 
+```bash 
+composer require lmcmi/validators
 ```
 
-ou
-
-```php
-$validator->setMessagesPath("caminho/arquivo.php"); #deve retornar um array de mensagens 
-
-```
-
-
-
-### Criando seus proprios handlers
+## Quick Start
+---
+### Standard Validation
+For straightforward validation, use the `Validator` class directly:
 
 ```php
 <?php
 
-namespace SeuNamespace\ContendoApenasHandlers;
+require_once __DIR__ . "/vendor/autoload.php";
 
-class In
-{
-    private $params;
+$validator = new \Validators\Validator;
+$result = $validator->string()->maxLength(10)->required()->validate('this is a test');
 
-    /**
-     * o construtor aceita infinitor parametros e podem  ser usados na validaçao
-     **/
-    public function __construct( ...$params)
-    {
-        $this->params = $params;
-    }
-    
-    /**
-     *  A funcao deve conter este nome, e deve retornar um booleano, true caso validaçao passe ou false caso falhe 
-     **/
-    public function validate($value): bool
-    {
-         return in_array($value, $this->params);
-    }
+if($result->failed()){
+    $result->throwOnFirst(); // Throws an exception for the first error message
 }
-
 ```
-
-#### Configurando os handlers
-
-
+### Validation with Rules
+For more complex scenarios, leverage rules with nested structures:
 ```php
+$values = [
+    'field_1' => [
+        "a" => "string",
+        "b" => "should_be_int",
+        "c" => []
+    ],
+    "field_2" => '{"json": "valid"}'
+];
 
-use Validators\Validator;
-
-require_once __DIR__ . "/vendor/autoload.php";
-
-$validator = new Validator([
-    "app-root" => __DIR__ // informa a raiz do seu projeto (onde contem o composer.json)
-]);
-$validator->setHandlersNamespace(SeuNamespace\ContendoApenasHandlers::class)
-
-# o nome da funçao é o nome da classe criada como handler
-# os parametros sao passados para o construtor
-# é possivel carregar mais de um namespace, handlers com mesmo nome serao substituido pelo ultimo carregado
-$error = $validator->in(1,2,3,4,5,6,7,8)->validate(6);
-
-$error->fails(); // false;
-
-
-
-```
-
-
-### Validacao com RULES
-
-```php
-use Validators\Validator;
-use Validators\ValidatorWithRules;
-
-require_once __DIR__ . "/vendor/autoload.php";
-
-$validator = new Validator;
-$validator->setMessages([
-    "between" => "teste campo :field possui valor invalido e deve estar entre :p1 e p:2"
-]);
-
-# a classe Validator so é necessaria quando existir uma 
-# pre configuraçao desejavel pelo usuario caso o contrario sera utilizado 
-# o Validator em estado default
-$validator = new ValidatorWithRules($validator);  
-
-# os campos sao passados em dot notation para se referir as chaves de um 
-# array que sera validado
 $rules = [
-    "campo_a" => "isArray|required",
-    "campo_a.item1" => "isString|between:1,2",
-    "campo_a.item2" => "numeric"
+    "field_1" => "array|required",
+    "field_1.a" => "string|required|lengthBetween:1,2",
+    "field_1.b" => "int|between:1,2",
+    "field_1.c" => "array",
+    "field_2" => "json",
 ];
 
-$fields = [
-    "campo_a" => [
-        "item1" => "aaaa",
-        "item2" => 3
-    ]
-];
+$result = Validator::rules($rules, $values);
 
-$error = $validator->validate($fields, $rules);
-
-if($error->fails()){
-    $error->throwOnFirst();
-    // mensage: "teste campo campo_a.item1 possui valor invalido e deve estar entre 1 e 2"
-}
-
+$result->failedOnField("teste.c"); // Returns false
+$result->failed(); // Returns true
+$result->throwOnFirstError(); // Throws an exception with the first error message
+$result->failedOnRule('string'); // Returns true
+$result->getErrorsMessages(); // Returns all error messages if they exist
 ```
+## Customization
+---
+Tailor the Validator package to your needs by customizing handlers and messages.
+
+### Custom Handlers
+Create custom validation handlers to tailor the validation process to your needs:
+```php
+namespace My\Namespace;
+
+class Required implements \Validators\Contracts\ValidatorHandler
+{
+    public function handle($item): bool
+    {
+        return isset($item);
+    }
+}
+```
+Set the namespace for all your custom handlers:
+```php
+$validator->setNamespaceHandler(My\Namespace::class);
+```
+
+### Custom Messages
+Tailor validation error messages for a personalized touch:
+```php
+namespace My\Message\Namespace;
+
+class Message implements \Validators\Contracts\MessagesRegistration
+{
+    public function register(): array
+    {
+        return [
+            'required' => ':field is required!'
+        ];
+    }
+}
+```
+Integrate your custom message class:
+```php 
+$validator->registerMessages(new \My\Message\Namespace\Message()); 
+```
+
+## Contributing
+---
+
+Contribute to the improvement of the Validator package by submitting issues or pull requests on the https://github.com/lcmialichi/validators.
+
+## Conclusion
+---
+
+With the Validator package, you have a powerful tool at your disposal for ensuring data integrity and reliability in your PHP projects. Dive into the documentation, experiment with the provided examples, and enhance your validation capabilities with ease.
