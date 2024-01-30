@@ -10,6 +10,6 @@ class MinLenght implements \Validators\Contracts\ValidatorHandler
 
     public function handle($value): bool
     {
-        return mb_strlen($value) >= $this->min;
+        return mb_strlen($value ?? "") >= $this->min;
     }
 }

@@ -6,10 +6,6 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 $validator = new Validator;
 
-// if you want to use your own namespace handler
-$validator->setNamespaceHandler("My\\Namespace\\Handler");
-$validator->registerMessages(new MyMessages());
-
 $values = [
     'field_1' => [
         "a" => "string",

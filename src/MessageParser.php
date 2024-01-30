@@ -40,7 +40,7 @@ class messageParser
     private function getMatches(): array
     {
         $matches = [];
-        preg_match_all("/:[^\s\W]*\b/", $this->getMessage(), $matches);
+        preg_match_all("/:[^\s\W]*\b/", $this->getMessage() ?? "", $matches);
         return $matches[0];
     }
 
