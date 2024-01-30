@@ -47,7 +47,7 @@ class ResultCollection
 
     public function getErrorsMessages(): array
     {
-        return $this->mapFailures(fn($result) => $result->message());
+        return $this->mapFailures(fn($result) => $result->getMessage());
     }
 
     public function mapSuccess(callable $callback): array
