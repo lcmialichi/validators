@@ -9,14 +9,14 @@ use Validators\Contracts\MessagesRegistration;
 
 class Validator extends Rules
 {
-    private MessagesRegistration $messages;
+    private array $messages = [];
 
-    private string $namespace;
+    private array $namespaces = [];
 
     public function __construct(array $rules = [])
     {
         $this->setRules($rules);
-        $this->setNamespaceHandler("\\Validators\\Handlers");
+        $this->addNamespaceHandler("\\Validators\\Handlers");
         $this->registerMessages(new Messages);
     }
 
@@ -25,26 +25,26 @@ class Validator extends Rules
         return (new self($rules))->validate($values);
     }
 
-    public function setNamespaceHandler(string $namespace)
+    public function addNamespaceHandler(string $namespace)
     {
-        $this->namespace = $namespace;
+        $this->namespaces[] = $namespace;
     }
 
-    public function registerMessages(MessagesRegistration $messages)
+    public function registerMessages(MessagesRegistration $messages): void
     {
-        $this->messages = $messages;
+        $this->messages = array_merge($this->messages, $messages->register());
     }
 
     /** @inheritDoc */
-    protected function message(): MessagesRegistration
+    protected function messages(): array
     {
         return $this->messages;
     }
     
     /** @inheritDoc */
-    protected function namespace (): string
+    protected function namespaces (): array
     {
-        return $this->namespace;
+        return $this->namespaces;
     }
 
     public function validate(mixed ...$values) : ResultCollection
@@ -62,7 +62,7 @@ class Validator extends Rules
 
     public function __call(string $name, array $arguments)
     {
-        $handler = $this->factory()->getHandler($name, $arguments);
+        $handler = $this->findHandlerByRule(new Rule($name, $arguments));
         $this->addHandler($name, $handler, $arguments);
         return $this;
     }

@@ -30,7 +30,7 @@ class Factory
         return class_exists($this->getNamespace() . "\\" . $this->createMethod($method));
     }
 
-    public function getHandler(string $method, array $args)
+    public function getHandler(string $method, array $args): ValidatorHandler|bool
     {
         if ($this->exists($method)) {
             $instance = $this->instantiate($method, $args);
@@ -41,7 +41,7 @@ class Factory
             throw new \Exception(sprintf("Handler %s must implemnt %s", $method, ValidatorHandler::class));
         }
 
-        throw new \Exception(sprintf("rule '%s' not found", $method));
+        return false;
     }
 
     private function instantiate(string $method, array $args = []): object

@@ -16,10 +16,10 @@ abstract class Rules
     private array $handlers = [];
 
     /** @abstract */
-    protected abstract function namespace (): string;
+    protected abstract function namespaces(): array;
 
     /** @abstract */
-    protected abstract function message(): MessagesRegistration;
+    protected abstract function messages(): array;
 
     protected function setRules(array $rules = []): void
     {
@@ -51,7 +51,11 @@ abstract class Rules
     private function buildHandlersFromRules(string $field, RuleCollection $collection): void
     {
         foreach ($collection->rules() as $rule) {
-            $handler = $this->factory()->getHandler($rule->name(), $rule->arguments());
+            $handler = $this->findHandlerByRule($rule);
+            if ($handler === null) {
+                throw new \Exception(sprintf("Handler %s not found", $rule->name()));
+            }
+
             $this->addHandler(
                 $rule->name(),
                 $handler,
@@ -59,6 +63,21 @@ abstract class Rules
                 $field
             );
         }
+    }
+
+    protected function findHandlerByRule(Rule $rule): ValidatorHandler
+    {
+        foreach ($this->factories() as $factory) {
+            if ($factory->exists($rule->name())) {
+                $handler = $factory->getHandler($rule->name(), $rule->arguments());;
+            }
+        }
+
+        if (!isset($handler) || !$handler) {
+            throw new \Exception(sprintf("Handler %s not found", $rule->name()));
+        }
+
+        return $handler;
     }
 
     protected function addHandler(
@@ -78,12 +97,19 @@ abstract class Rules
 
     protected function findMessage(string $rule): ?string
     {
-        return $this->message()->register()[$rule] ?? null;
+        var_dump($rule, $this->messages()[$rule] ?? null);
+        return $this->messages()[$rule] ?? null;
     }
 
-    protected function factory(): Factory
+    /** @return array<Factory> */
+    protected function factories(): array
     {
-        return new Factory($this->namespace());
+        $factory = [];
+        foreach ($this->namespaces() as $namespace) {
+            $factory[] = new Factory($namespace);
+        }
+
+        return $factory;
     }
 
 }
