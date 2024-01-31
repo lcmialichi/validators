@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class InEnum implements \Validators\Contracts\ValidatorHandler
+class EnumReserved_ implements \Validators\Contracts\ValidatorHandler
 {
     private $enum;
 

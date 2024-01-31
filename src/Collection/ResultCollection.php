@@ -3,6 +3,7 @@
 namespace Validators\Collection;
 
 use Validators\Result;
+use Validators\Exceptions\ValidationException;
 
 class ResultCollection
 {
@@ -83,7 +84,7 @@ class ResultCollection
     public function throwOnFirstError()
     {
         if ($this->failed()) {
-            throw new \Exception($this->getFirstError()->getMessage());
+            throw new ValidationException($this->getFirstError()->getMessage());
         }
         return false;
     }

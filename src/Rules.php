@@ -3,6 +3,7 @@
 namespace Validators;
 
 use Validators\RuleParser;
+use Validators\Exceptions\RuleException;
 use Validators\Collection\RuleCollection;
 use Validators\Contracts\ValidatorHandler;
 use Validators\Collection\HandlerCollection;
@@ -15,10 +16,16 @@ abstract class Rules
     /** @var array<Handler> */
     private array $handlers = [];
 
-    /** @abstract */
+    /** 
+     * @abstract 
+     * @return array<string>
+     */
     protected abstract function namespaces(): array;
 
-    /** @abstract */
+    /** 
+     * @abstract 
+     * @return array<MessagesRegistration>
+     * */
     protected abstract function messages(): array;
 
     protected function setRules(array $rules = []): void
@@ -51,14 +58,9 @@ abstract class Rules
     private function buildHandlersFromRules(string $field, RuleCollection $collection): void
     {
         foreach ($collection->rules() as $rule) {
-            $handler = $this->findHandlerByRule($rule);
-            if ($handler === null) {
-                throw new \Exception(sprintf("Handler %s not found", $rule->name()));
-            }
-
             $this->addHandler(
                 $rule->name(),
-                $handler,
+                $this->findHandlerByRule($rule),
                 $rule->arguments(),
                 $field
             );
@@ -69,12 +71,12 @@ abstract class Rules
     {
         foreach ($this->factories() as $factory) {
             if ($factory->exists($rule->name())) {
-                $handler = $factory->getHandler($rule->name(), $rule->arguments());;
+                $handler = $factory->getHandler($rule->name(), $rule->arguments());
             }
         }
 
         if (!isset($handler) || !$handler) {
-            throw new \Exception(sprintf("Handler %s not found", $rule->name()));
+            throw new RuleException(sprintf("Handler %s not found", $rule->name()));
         }
 
         return $handler;
@@ -97,7 +99,6 @@ abstract class Rules
 
     protected function findMessage(string $rule): ?string
     {
-        var_dump($rule, $this->messages()[$rule] ?? null);
         return $this->messages()[$rule] ?? null;
     }
 

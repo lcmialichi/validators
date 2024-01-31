@@ -4,6 +4,7 @@
 namespace Validators;
 
 use Validators\Contracts\ValidatorHandler;
+use Validators\Exceptions\HandlerException;
 
 class Factory
 {
@@ -38,7 +39,7 @@ class Factory
                 return $instance;
             }
 
-            throw new \Exception(sprintf("Handler %s must implemnt %s", $method, ValidatorHandler::class));
+            throw new HandlerException(sprintf("Handler %s must implemnt %s", $method, ValidatorHandler::class));
         }
 
         return false;
