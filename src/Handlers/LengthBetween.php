@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class LenghtBetween implements \Validators\Contracts\ValidatorHandler
+class LengthBetween implements \Validators\Contracts\ValidatorHandler
 {
 
     public function __construct(private $first, private $last)

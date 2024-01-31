@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class MinLenght implements \Validators\Contracts\ValidatorHandler
+class MinLength implements \Validators\Contracts\ValidatorHandler
 {
     public function __construct(private $min)
     {

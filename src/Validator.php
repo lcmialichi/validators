@@ -20,13 +20,13 @@ class Validator extends Rules
         $this->registerMessages(new Messages);
     }
 
-    public static function rules(array $rules, array $values): ResultCollection
+    public static function rules(array $rules): self
     {
-        return (new self($rules))->validate($values);
+        return (new self($rules));
     }
 
     public function addNamespaceHandler(string $namespace)
-    {
+    {   
         $this->namespaces[] = $namespace;
     }
 

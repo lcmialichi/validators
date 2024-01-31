@@ -2,7 +2,7 @@
 
 namespace Validators\Handlers;
 
-class MaxLenght implements \Validators\Contracts\ValidatorHandler
+class MaxLength implements \Validators\Contracts\ValidatorHandler
 {
     public function __construct(private $max)
     {

@@ -5,7 +5,6 @@ use Validators\Validator;
 require_once __DIR__ . "/vendor/autoload.php";
 
 $validator = new Validator;
-
 $values = [
     'field_1' => [
         "a" => "string",
@@ -17,13 +16,16 @@ $values = [
 
 $rules = [
     "field_1" => "array|required",
-    "field_1.a" => "string|required|lenghtBetween:1,2",
+    "field_1.a" => "string|required|lengthBetween:1,2",
     "field_1.b" => "int|between:1,2",
     "field_1.c" => "array",
     "field_2" => "json",
 ];
 
-$result = Validator::rules($rules, $values);
+$validator = Validator::rules($rules);
+
+$result = $validator->validate($values);
+
 
 $result->failedOnField("teste.c"); // false
 $result->failed(); // true
