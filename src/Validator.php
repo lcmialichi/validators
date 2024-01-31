@@ -2,6 +2,7 @@
 
 namespace Validators;
 
+use Validators\Exceptions\RuleException;
 use Validators\Rules;
 use Validators\Message\Messages;
 use Validators\Collection\ResultCollection;
@@ -26,7 +27,7 @@ class Validator extends Rules
     }
 
     public function addNamespaceHandler(string $namespace)
-    {   
+    {
         $this->namespaces[] = $namespace;
     }
 
@@ -40,14 +41,14 @@ class Validator extends Rules
     {
         return $this->messages;
     }
-    
+
     /** @inheritDoc */
-    protected function namespaces (): array
+    protected function namespaces(): array
     {
         return $this->namespaces;
     }
 
-    public function validate(mixed ...$values) : ResultCollection
+    public function validate(mixed ...$values): ResultCollection
     {
         if ($this->hasRules()) {
             $this->prepareRules();
@@ -62,6 +63,10 @@ class Validator extends Rules
 
     public function __call(string $name, array $arguments)
     {
+        if ($this->hasRules()) {
+            throw new RuleException("Unnable to add validation after rules are set!");
+        }
+
         $handler = $this->findHandlerByRule(new Rule($name, $arguments));
         $this->addHandler($name, $handler, $arguments);
         return $this;

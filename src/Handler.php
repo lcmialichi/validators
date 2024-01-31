@@ -49,13 +49,20 @@ class Handler
     {
         $arguments = [];
         foreach ($this->buildArgumentReflection() as $argument) {
-            if($argument->isVariadic()){
-                $arguments[$argument->getName()] = implode(", ", $args);
+            if ($argument->isVariadic()) {
+                $arguments[$argument->getName()] = implode(", ", $this->removeUnscalarTypes($args));
                 break;
             }
             $arguments[$argument->getName()] = array_shift($args);
         }
         return $arguments;
+    }
+
+    private function removeUnscalarTypes(array $args): array
+    {
+        return array_map(function ($arg) {
+            return !is_scalar($arg) ? gettype($arg) : $arg;
+        }, $args);
     }
 
     /** @return array<\ReflectionParameter> */

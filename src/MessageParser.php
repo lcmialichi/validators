@@ -14,7 +14,7 @@ class messageParser
     {
     }
 
-    public function replace(string $field, array $args): self
+    public function replace(?string $field, array $args): self
     {
         $matches = $this->getMatches();
         foreach ($matches as $match) {
@@ -24,7 +24,7 @@ class messageParser
             }
 
             if ($this->isGlobalWord($match)) {
-                $this->message = $this->resolveGlobalWord($match, $field, $args);
+                $this->message = $this->resolveGlobalWord($match, $field ?? "", $args);
             }
 
         }

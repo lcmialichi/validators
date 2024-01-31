@@ -2,6 +2,8 @@
 
 namespace Validators\Handlers;
 
+use Validators\Exceptions\HandlerException;
+
 class In implements \Validators\Contracts\ValidatorHandler
 {
   private $equals;

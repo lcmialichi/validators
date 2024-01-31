@@ -11,6 +11,10 @@ class Between implements \Validators\Contracts\ValidatorHandler
 
     public function handle($value): bool
     {
+        if (!is_int($value) && !is_float($value)) {
+            return false;
+        }
+
         return $value >= $this->first && $value <= $this->last;
     }
 }

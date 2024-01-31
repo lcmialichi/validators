@@ -30,8 +30,9 @@ class Dispatch
 
     private function execute(mixed $reference): ResultCollection
     {
+        $value = [$reference];
         foreach ($this->handlers->getHandlers() as $rule) {
-            if ($rule->field() !== null) {
+            if ($rule->field() !== null && is_array($reference)) {
                 $value = [dot($rule->field(), $reference ?? [])];
             }
 
@@ -41,7 +42,7 @@ class Dispatch
                 $status,
                 $status ? null : $this->parseMessage($rule),
                 $value,
-                $status ? null : $rule->arguments(),
+                $status ? null : false,
                 $rule->field()
             );
             $statusName = $status ? "success" : "errors";

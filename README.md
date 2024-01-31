@@ -61,7 +61,7 @@ $rules = [
     "field_2" => "json",
 ];
 
-$result = Validator::rules($rules, $values);
+$result = Validator::rules($rules)->validade($values);
 
 $result->failedOnField("teste.c"); // Returns false
 $result->failed(); // Returns true
