@@ -28,8 +28,9 @@ abstract class Rules
      * */
     protected abstract function messages(): array;
 
-    protected function setRules(array $rules = []): void
+    public function setRules(array $rules = []): void
     {
+        $this->handlers = [];
         $this->rules = $rules;
     }
 
