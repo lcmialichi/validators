@@ -14,7 +14,6 @@ class NotIn implements \Validators\Contracts\ValidatorHandler
 
   public function handle($value): bool
   {
-
     return !in_array($value, $this->equals);
   }
 }

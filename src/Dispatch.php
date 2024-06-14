@@ -36,7 +36,13 @@ class Dispatch
                 $value = [dot($rule->field(), $reference ?? [])];
             }
 
-            $status = $rule->handler()->handle(...$value);
+            try{
+                $handler = $rule->handler();
+                $status = $handler->handle(...$value);
+            }catch(\Throwable){
+                $status = false;
+            }
+
             $result = new Result(
                 $rule->name(),
                 $status,
@@ -47,6 +53,10 @@ class Dispatch
             );
             $statusName = $status ? "success" : "errors";
             $collection[$statusName][] = $result;
+            
+            if(method_exists($handler, 'break') && $handler->break()){
+                break;
+            }
         }
 
         return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);

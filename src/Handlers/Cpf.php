@@ -6,6 +6,10 @@ class Cpf implements \Validators\Contracts\ValidatorHandler
 {
     public function handle($cpf): bool
     {
+        if(!is_string($cpf) && !is_numeric($cpf)){
+            return false;
+        }
+
         if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) {
             return false;
         }

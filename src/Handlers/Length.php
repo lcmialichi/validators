@@ -14,6 +14,10 @@ class Length implements \Validators\Contracts\ValidatorHandler
             return count($value) == $this->numeric;
         }
 
+        if(!is_string($value)){
+            return false;
+        }
+
         return strlen($value) == $this->numeric;
     }
 }
