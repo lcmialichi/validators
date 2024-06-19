@@ -45,6 +45,11 @@ class Handler
         return $this->message;
     }
 
+    public function getHandlerName(): string
+    {
+        return $this->handler::class;
+    }
+
     private function getArgumentsName(?array $args): array
     {
         $arguments = [];

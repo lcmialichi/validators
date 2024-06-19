@@ -31,15 +31,20 @@ class Dispatch
     private function execute(mixed $reference): ResultCollection
     {
         $value = [$reference];
-        foreach ($this->handlers->getHandlers() as $rule) {
+        $handlers = $this->getHandlers();
+        foreach ($handlers as $rule) {
             if ($rule->field() !== null && is_array($reference)) {
                 $value = [dot($rule->field(), $reference ?? [])];
             }
+            
+            if (!$this->mustValidate($rule->field()) && is_null($value[0])) {
+                continue;
+            }
 
-            try{
+            try {
                 $handler = $rule->handler();
                 $status = $handler->handle(...$value);
-            }catch(\Throwable){
+            } catch (\Throwable) {
                 $status = false;
             }
 
@@ -53,10 +58,6 @@ class Dispatch
             );
             $statusName = $status ? "success" : "errors";
             $collection[$statusName][] = $result;
-            
-            if(method_exists($handler, 'break') && $handler->break()){
-                break;
-            }
         }
 
         return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);
@@ -68,6 +69,50 @@ class Dispatch
             $handler->field(),
             $handler->arguments()
         )->getMessage();
+    }
+
+    /**
+     * @param array<Handler> $handlers
+     * @param class-string $instance
+     * @param string|null $field
+     */
+    private function hasInstanceOf(string $instance, array $handlers, ?string $field = null): bool
+    {
+        $handler = array_filter(
+            $handlers,
+            fn(Handler $handler) => $handler->getHandlerName() === $instance
+            && ($field === null ? true : $handler->field() === $field)
+        );
+
+        return !empty($handler);
+    }
+
+    /**
+     * @return array<Handler>
+     */
+    private function getHandlers(): array
+    {
+        return $this->handlers->getHandlers();
+    }
+
+    private function mustValidate(?string $field): bool
+    {
+        $handlers = $this->getHandlers();
+        foreach ($this->breakableAbsenceHandlers() as $class) {
+            if (!$this->hasInstanceOf($class, $handlers, $field)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    private function breakableAbsenceHandlers(): array
+    {
+        return [
+            \Validators\Handlers\Required::class
+        ];
     }
 
 }
