@@ -36,7 +36,7 @@ class Dispatch
             if ($rule->field() !== null && is_array($reference)) {
                 $value = [dot($rule->field(), $reference ?? [])];
             }
-            
+
             if (!$this->mustValidate($rule->field()) && is_null($value[0])) {
                 continue;
             }
@@ -56,8 +56,8 @@ class Dispatch
                 $status ? null : false,
                 $rule->field()
             );
-            $statusName = $status ? "success" : "errors";
-            $collection[$statusName][] = $result;
+
+            $collection[ $status ? "success" : "errors"][] = $result;
         }
 
         return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);
@@ -97,22 +97,7 @@ class Dispatch
 
     private function mustValidate(?string $field): bool
     {
-        $handlers = $this->getHandlers();
-        foreach ($this->breakableAbsenceHandlers() as $class) {
-            if (!$this->hasInstanceOf($class, $handlers, $field)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    private function breakableAbsenceHandlers(): array
-    {
-        return [
-            \Validators\Handlers\Required::class
-        ];
+        return $this->hasInstanceOf(\Validators\Handlers\Required::class, $this->getHandlers(), $field);
     }
 
 }
