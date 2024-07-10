@@ -40,9 +40,13 @@ class Handler
         return count($this->arguments);
     }
 
-    public function message(): ?string
+    public function message(): string
     {
-        return $this->message;
+        if(!is_null($this->message)){
+            return $this->message;
+        }
+
+        return sprintf("field :field is invalid for rule: %s", $this->name());
     }
 
     public function getHandlerName(): string

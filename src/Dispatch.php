@@ -37,10 +37,6 @@ class Dispatch
                 $value = [dot($rule->field(), $reference ?? [])];
             }
 
-            if (!$this->mustValidate($rule->field()) && is_null($value[0])) {
-                continue;
-            }
-
             try {
                 $handler = $rule->handler();
                 $status = $handler->handle(...$value);
@@ -58,6 +54,10 @@ class Dispatch
             );
 
             $collection[ $status ? "success" : "errors"][] = $result;
+
+            if(method_exists($handler, 'break') && $handler->break()){
+                break;
+            }
         }
 
         return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);
@@ -93,11 +93,6 @@ class Dispatch
     private function getHandlers(): array
     {
         return $this->handlers->getHandlers();
-    }
-
-    private function mustValidate(?string $field): bool
-    {
-        return $this->hasInstanceOf(\Validators\Handlers\Required::class, $this->getHandlers(), $field);
     }
 
 }
