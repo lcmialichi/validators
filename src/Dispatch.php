@@ -32,35 +32,48 @@ class Dispatch
     {
         $value = [$reference];
         $handlers = $this->getHandlers();
+        $bypass = [];
         foreach ($handlers as $rule) {
             if ($rule->field() !== null && is_array($reference)) {
                 $value = [dot($rule->field(), $reference ?? [])];
             }
 
-            try {
-                $handler = $rule->handler();
-                $status = $handler->handle(...$value);
-            } catch (\Throwable) {
-                $status = false;
+            $result = $this->runHandler($rule, $value, $bypass);
+            if($result === null){
+                continue;
             }
 
-            $result = new Result(
-                $rule->name(),
-                $status,
-                $status ? null : $this->parseMessage($rule),
-                $value,
-                $status ? null : false,
-                $rule->field()
-            );
-
-            $collection[ $status ? "success" : "errors"][] = $result;
-
-            if(method_exists($handler, 'break') && $handler->break()){
-                break;
-            }
+            $collection[$result->getStatus() ? "success" : "errors"][] = $result;
         }
 
         return new ResultCollection($collection['errors'] ?? [], $collection['success'] ?? []);
+    }
+
+    private function runHandler(Handler $rule, array $value, array &$bypass = []): ?Result
+    {
+        if(in_array($rule->field(), $bypass)) {
+           return null;
+        }
+
+        try {
+            $handler = $rule->handler();
+            $status = $handler->handle(...$value);
+        } catch (\Throwable) {
+            $status = false;
+        }
+
+        if (method_exists($handler, 'break') && $handler->break()) {
+            $bypass[] = $rule->field();
+        }
+
+        return new Result(
+            $rule->name(),
+            $status,
+            $status ? null : $this->parseMessage($rule),
+            $value,
+            $status ? null : false,
+            $rule->field()
+        );
     }
 
     private function parseMessage(Handler $handler): ?string
@@ -69,22 +82,6 @@ class Dispatch
             $handler->field(),
             $handler->arguments()
         )->getMessage();
-    }
-
-    /**
-     * @param array<Handler> $handlers
-     * @param class-string $instance
-     * @param string|null $field
-     */
-    private function hasInstanceOf(string $instance, array $handlers, ?string $field = null): bool
-    {
-        $handler = array_filter(
-            $handlers,
-            fn(Handler $handler) => $handler->getHandlerName() === $instance
-            && ($field === null ? true : $handler->field() === $field)
-        );
-
-        return !empty($handler);
     }
 
     /**
